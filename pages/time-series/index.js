@@ -11,7 +11,6 @@ import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
 
 export default function SSR({ propelData }) {
-    console.log('propelData', propelData)
     const { query } = useRouter()
     let timeRange = ''
     if (query.timeRange) {
