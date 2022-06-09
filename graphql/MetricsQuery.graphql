@@ -1,8 +1,8 @@
 query Metrics {
-  metrics {
-    nodes {
-      id
-      uniqueName
+    metrics {
+        nodes {
+            id
+            uniqueName
+        }
     }
-  }
 }
