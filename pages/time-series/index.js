@@ -1,6 +1,6 @@
 import Link from 'next/link'
 import Head from 'next/head'
-import { GraphQLClient, request, gql } from 'graphql-request'
+import { GraphQLClient, gql } from 'graphql-request'
 import { ClientCredentials } from "simple-oauth2";
 import ReactECharts from 'echarts-for-react';
 import * as echarts from 'echarts';
@@ -14,12 +14,10 @@ export default function SSR({ propelData }) {
     console.log('propelData', propelData);
     const { query } = useRouter();
     let timeRange = '';
-    let granularity = '';   
     if (query.timeRange) {
         timeRange = query.timeRange;
     } else {
         timeRange = "LAST_30_DAYS";
-        granularity = "DAY";
     }
     let timeRangeText = timeRange.replace(/_/g, ' ');
     const options = {
@@ -144,9 +142,6 @@ export async function getServerSideProps(context) {
 
     // Create the OAuth2 client
     const oauth2Client = new ClientCredentials(config);
-    const tokenParams = {
-        scope: '<scope>',
-    };
 
     // Get a token using the client credentials
     const accessToken = await oauth2Client.getToken()
