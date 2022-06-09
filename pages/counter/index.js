@@ -1,12 +1,13 @@
 import Link from 'next/link'
 import Head from 'next/head'
-import { GraphQLClient, request, gql } from 'graphql-request'
+import { GraphQLClient } from 'graphql-request'
 import { ClientCredentials } from 'simple-oauth2'
 import Dropdown from 'react-bootstrap/Dropdown'
 import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
+import { CounterQuery, getCounterVariables } from './CounterQuery'
 
 export default function SSR({ propelData }) {
     const { query } = useRouter()
@@ -54,7 +55,10 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
+            <br />
+            <br />
                 <h1>Counter example</h1>
+                <br />
                 <Container fluid>
                     <Row style={{ padding: 5 }}>
                         <Col
@@ -143,34 +147,9 @@ export default function SSR({ propelData }) {
 export async function getServerSideProps(context) {
     //Set the query
 
-    const counterQuery = gql`
-        query timeSeries(
-            $uniqueName: String!
-            $timeRange: TimeRangeInput!
-            $comparisonTimeRange: TimeRangeInput!
-        ) {
-            metricByName(uniqueName: $uniqueName) {
-                mainCounter: counter(input: { timeRange: $timeRange }) {
-                    value
-                }
-                comparisonCounter: counter(
-                    input: { timeRange: $comparisonTimeRange }
-                ) {
-                    value
-                }
-            }
-        }
-    `
+    const {timeRange,comparisonTimeRange} = context.query
 
-    const variables = {
-        uniqueName: 'sales',
-        timeRange: {
-            relative: context.query.timeRange || 'TODAY',
-        },
-        comparisonTimeRange: {
-            relative: context.query.comparisonTimeRange || 'YESTERDAY',
-        },
-    }
+    const variables = getCounterVariables({timeRange,comparisonTimeRange})
 
     // Set the config for the OAuth2 client
     const config = {
@@ -186,9 +165,6 @@ export async function getServerSideProps(context) {
 
     // Create the OAuth2 client
     const oauth2Client = new ClientCredentials(config)
-    const tokenParams = {
-        scope: '<scope>',
-    }
 
     // Get a token using the client credentials
     const accessToken = await oauth2Client.getToken()
@@ -202,7 +178,7 @@ export async function getServerSideProps(context) {
         'authorization',
         'Bearer ' + accessToken.token.access_token,
     )
-    const data = await client.request(counterQuery, variables)
+    const data = await client.request(CounterQuery, variables)
 
     return {
         props: {

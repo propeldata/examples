@@ -9,6 +9,7 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useRouter } from 'next/router'
+import { TimeSeriesQuery, getTimeSeriesVariables } from './TimeSeriesQuery'
 
 export default function SSR({ propelData }) {
     const { query } = useRouter()
@@ -58,7 +59,10 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
+            <br />
+                <br />
                 <h1>Time series example</h1>
+                <br />
                 <Container fluid>
                     <Row style={{ padding: 5 }}>
                         <Col
@@ -139,32 +143,9 @@ export default function SSR({ propelData }) {
 }
 
 export async function getServerSideProps(context) {
-    //Set the query
-
-    const timeSeriesQuery = gql`
-        query timeSeries(
-            $uniqueName: String!
-            $timeRange: TimeRangeInput!
-            $granularity: TimeSeriesGranularity!
-        ) {
-            metricByName(uniqueName: $uniqueName) {
-                timeSeries(
-                    input: { timeRange: $timeRange, granularity: $granularity }
-                ) {
-                    labels
-                    values
-                }
-            }
-        }
-    `
-
-    const variables = {
-        uniqueName: 'sales',
-        timeRange: {
-            relative: context.query.timeRange || 'LAST_30_DAYS',
-        },
-        granularity: context.query.granularity || 'DAY',
-    }
+    //Set the query variables
+    const {timeRange, granularity} = context.query
+    const variables = getTimeSeriesVariables({timeRange, granularity})
 
     // Set the config for the OAuth2 client
     const config = {
@@ -193,7 +174,7 @@ export async function getServerSideProps(context) {
         'authorization',
         'Bearer ' + accessToken.token.access_token,
     )
-    const data = await client.request(timeSeriesQuery, variables)
+    const data = await client.request(TimeSeriesQuery, variables)
 
     return {
         props: {
