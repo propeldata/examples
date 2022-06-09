@@ -232,7 +232,7 @@ export async function getServerSideProps(context) {
         'authorization',
         'Bearer ' + accessToken.token.access_token,
     )
-    const data = await client.request(timeSeriesQuery, variables)
+    const data = await client.request(leaderboardQuery, variables)
 
     return {
         props: {
