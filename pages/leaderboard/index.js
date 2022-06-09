@@ -9,6 +9,7 @@ import Col from 'react-bootstrap/Col'
 import Table from 'react-bootstrap/Table'
 import { useRouter } from 'next/router'
 import { useEffect } from 'react'
+import { LeaderboardQuery, getLeaderboardVariables } from './LeaderboardQuery'
 
 export default function SSR({ propelData }) {
     console.log('propelData', propelData)
@@ -56,7 +57,10 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
+            <br />
+            <br />
                 <h1>Leaderboard example</h1>
+                <br />
                 <Container fluid>
                     <Row style={{ padding: 5 }}>
                         <Col
@@ -165,45 +169,9 @@ export default function SSR({ propelData }) {
 }
 
 export async function getServerSideProps(context) {
-    //Set the query
 
-    const leaderboardQuery = gql`
-        query timeSeries(
-            $uniqueName: String!
-            $timeRange: TimeRangeInput!
-            $rowLimit: Int!
-            $sort: Sort
-            $dimensions: [DimensionInput!]!
-        ) {
-            metricByName(uniqueName: $uniqueName) {
-                leaderboard: leaderboard(
-                    input: {
-                        timeRange: $timeRange
-                        rowLimit: $rowLimit
-                        sort: $sort
-                        dimensions: $dimensions
-                    }
-                ) {
-                    headers
-                    rows
-                }
-            }
-        }
-    `
-
-    const variables = {
-        uniqueName: 'sales',
-        timeRange: {
-            relative: context.query.timeRange || 'YESTERDAY',
-        },
-        rowLimit: 10,
-        sort: 'DESC',
-        dimensions: [
-            {
-                columnName: 'PRODUCT_CATEGORY',
-            },
-        ],
-    }
+    const {timeRange} = context.query
+    const variables = getLeaderboardVariables({timeRange})
 
     // Set the config for the OAuth2 client
     const config = {
@@ -232,7 +200,7 @@ export async function getServerSideProps(context) {
         'authorization',
         'Bearer ' + accessToken.token.access_token,
     )
-    const data = await client.request(leaderboardQuery, variables)
+    const data = await client.request(LeaderboardQuery, variables)
 
     return {
         props: {
