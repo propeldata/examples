@@ -9,11 +9,9 @@ import Container from 'react-bootstrap/Container'
 import Row from 'react-bootstrap/Row'
 import Col from 'react-bootstrap/Col'
 import { useRouter } from "next/router";
-//import { TimeSeriesQuery } from '../../graphql'
 
 export default function SSR({ propelData }) {
     console.log('propelData', propelData);
-    //console.log('completedDelayedTimeSeries', completedDelayedTimeSeries);
     const { query } = useRouter();
     let timeRange = '';
     let granularity = '';   
@@ -44,12 +42,12 @@ export default function SSR({ propelData }) {
         },
         series: [
             {
-                name: 'On Time Dispatches',
+                name: 'Values',
                 type: 'bar',
-                barWidth: '75%',
+                barWidth: '85%',
                 data: propelData.timeSeries.values,
                 stack: propelData.timeSeries.labels,
-                color: '#C4C4C4'
+                color: '#62B0E8'
             }
         ],
         tooltip: {
@@ -73,7 +71,8 @@ export default function SSR({ propelData }) {
                         {timeRangeText}
                         </Dropdown.Toggle>
                         <Dropdown.Menu >
-                            <Dropdown.Item href="/time-series?timeRange=LAST_7_DAYS&granularity=DAY">Last 7 days</Dropdown.Item>
+                            <Dropdown.Item href="/time-series?timeRange=TODAY&granularity=MINUTE">Today</Dropdown.Item>
+                            <Dropdown.Item href="/time-series?timeRange=LAST_7_DAYS&granularity=HOUR">Last 7 days</Dropdown.Item>
                             <Dropdown.Item href="/time-series?timeRange=LAST_30_DAYS&granularity=DAY">Last 30 days</Dropdown.Item>
                             <Dropdown.Item href="/time-series?timeRange=LAST_90_DAYS&granularity=DAY">Last 90 days</Dropdown.Item>
                             <Dropdown.Item href="/time-series?timeRange=THIS_YEAR&granularity=DAY">This year</Dropdown.Item>
@@ -110,13 +109,11 @@ export async function getServerSideProps(context) {
     //Set the query
 
     const timeSeriesQuery = gql`
-        query timeSeries {
-            metricByName(uniqueName: "sales") {
+        query timeSeries ($uniqueName: String!, $timeRange: TimeRangeInput!, $granularity: TimeSeriesGranularity!) {
+            metricByName(uniqueName: $uniqueName) {
                 timeSeries (input: {
-                timeRange: {
-                    relative: LAST_7_DAYS
-                }
-                granularity: DAY
+                timeRange: $timeRange
+                granularity: $granularity
                 }) {
                     labels
                     values
@@ -127,9 +124,9 @@ export async function getServerSideProps(context) {
     const variables = {
         "uniqueName":"sales",
         "timeRange":{
-            "relative": "THIS_WEEK"//context.query.timeRange
+            "relative": context.query.timeRange || "LAST_30_DAYS",
         },
-        "granularity": "DAY"
+        "granularity": context.query.granularity || "DAY"
     }
 
 
