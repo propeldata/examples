@@ -1,4 +1,4 @@
-import { GraphQLClient, gql } from 'graphql-request'
+import { gql } from 'graphql-request'
 
 export const CounterQuery = gql`
         query timeSeries(
