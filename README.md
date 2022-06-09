@@ -1,3 +1,3 @@
-# Propel Demo Dashboard - NextJS & React
+# Propel Examples
 
-This demo app is simple dashboads for the TPCH dataset
+Examples of time series, counters, and leaderboards using Propel.
