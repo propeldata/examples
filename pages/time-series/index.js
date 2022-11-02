@@ -59,7 +59,7 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-            <br />
+                <br />
                 <br />
                 <h1>Time series example</h1>
                 <br />
@@ -144,8 +144,8 @@ export default function SSR({ propelData }) {
 
 export async function getServerSideProps(context) {
     //Set the query variables
-    const {timeRange, granularity} = context.query
-    const variables = getTimeSeriesVariables({timeRange, granularity})
+    const { timeRange, granularity } = context.query
+    const variables = getTimeSeriesVariables({ timeRange, granularity })
 
     // Set the config for the OAuth2 client
     const config = {

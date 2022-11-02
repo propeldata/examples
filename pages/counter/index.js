@@ -55,8 +55,8 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-            <br />
-            <br />
+                <br />
+                <br />
                 <h1>Counter example</h1>
                 <br />
                 <Container fluid>
@@ -147,9 +147,9 @@ export default function SSR({ propelData }) {
 export async function getServerSideProps(context) {
     //Set the query
 
-    const {timeRange,comparisonTimeRange} = context.query
+    const { timeRange, comparisonTimeRange } = context.query
 
-    const variables = getCounterVariables({timeRange,comparisonTimeRange})
+    const variables = getCounterVariables({ timeRange, comparisonTimeRange })
 
     // Set the config for the OAuth2 client
     const config = {
