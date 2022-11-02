@@ -57,8 +57,8 @@ export default function SSR({ propelData }) {
                 <link rel="icon" href="/favicon.ico" />
             </Head>
             <main>
-            <br />
-            <br />
+                <br />
+                <br />
                 <h1>Leaderboard example</h1>
                 <br />
                 <Container fluid>
@@ -132,16 +132,21 @@ export default function SSR({ propelData }) {
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {/* Loop through the rows and create a row for each one: */}
-                                    {rows[0].map((_, index) => (
-                                        <tr
-                                            key={`${rows[0][index]}${rows[1][index]}${index}`}
-                                        >
-                                            <td>{index + 1}</td>
-                                            {/* Access each column directly and create a cell for each data point: */}
-                                            <td>{rows[0][index]}</td>
+                                    {rows.map((row, rowIdx) => (
+                                        <tr key={`${rowIdx}`}>
+                                            {row
+                                                .slice(0, row.length - 1)
+                                                .map((col, colIdx) => (
+                                                    <td
+                                                        key={`${rowIdx}-${colIdx}`}
+                                                    >
+                                                        {col}
+                                                    </td>
+                                                ))}
                                             <td>
-                                                {formatDollars(rows[1][index])}
+                                                {formatDollars(
+                                                    row[row.length - 1][index],
+                                                )}
                                             </td>
                                         </tr>
                                     ))}
@@ -169,9 +174,8 @@ export default function SSR({ propelData }) {
 }
 
 export async function getServerSideProps(context) {
-
-    const {timeRange} = context.query
-    const variables = getLeaderboardVariables({timeRange})
+    const { timeRange } = context.query
+    const variables = getLeaderboardVariables({ timeRange })
 
     // Set the config for the OAuth2 client
     const config = {
